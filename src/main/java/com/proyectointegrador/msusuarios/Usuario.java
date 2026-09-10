@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import org.mindrot.BCrypt;
 
 public class Usuario {
+    private int id;
     private String nombre;
     private String apellido;
     private String documentoDeIdentidad;
@@ -13,9 +14,10 @@ public class Usuario {
     private String clave;
     private Rol rol;
 
-    public Usuario(String nombre, String apellido, String documentoDeIdentidad,
+    public Usuario(int id,String nombre, String apellido, String documentoDeIdentidad,
                    String celular, LocalDate fechaNacimiento, String correo, String clave) {
 
+        this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.documentoDeIdentidad = documentoDeIdentidad;
@@ -65,6 +67,9 @@ public class Usuario {
 
     public Rol getRol() {
         return rol;
+    }
+    public int getId() {
+        return id;
     }
 }
 
