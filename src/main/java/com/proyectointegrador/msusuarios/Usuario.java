@@ -1,6 +1,7 @@
 package com.proyectointegrador.msusuarios;
 
 import java.time.LocalDate;
+import org.mindrot.BCrypt;
 
 public class Usuario {
     private String nombre;
@@ -52,6 +53,14 @@ public class Usuario {
                 && fechaNacimiento != null
                 && !correo.isEmpty()
                 && !clave.isEmpty();
+    }
+
+    public void encriptarClave() {
+        clave = BCrypt.hashpw(clave, BCrypt.gensalt());
+    }
+
+    public String getClave() {
+        return clave;
     }
 }
 
