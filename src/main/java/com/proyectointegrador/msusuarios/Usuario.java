@@ -62,6 +62,10 @@ public class Usuario {
     public String getClave() {
         return clave;
     }
+
+    public Rol getRol() {
+        return rol;
+    }
 }
 
 

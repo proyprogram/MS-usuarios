@@ -21,6 +21,7 @@ public class PruebaUsuario {
         System.out.println("Correo válido: " + usuario.correoValido());
         System.out.println("Es mayor de edad: " + usuario.esMayorDeEdad());
         System.out.println("Campos obligatorios: " + usuario.camposObligatoriosValidos());
+        System.out.println("Rol: " + usuario.getRol());
 
         usuario.encriptarClave();
 
