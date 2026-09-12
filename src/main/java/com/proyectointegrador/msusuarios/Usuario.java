@@ -37,7 +37,12 @@ public class Usuario {
     }
 
     public boolean correoValido() {
-        return correo.contains("@") && correo.contains(".");
+        int posicionArroba = correo.indexOf("@");
+        int posicionPunto = correo.lastIndexOf(".");
+
+        return posicionArroba > 0
+                && posicionPunto > posicionArroba + 1
+                && posicionPunto < correo.length() - 1;
     }
 
     public boolean esMayorDeEdad() {
