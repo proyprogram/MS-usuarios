@@ -73,11 +73,13 @@ public class Usuario {
     public Rol getRol() {
         return rol;
     }
+
     public int getId() {
         return id;
     }
+
+    public String getCorreo() {
+        return correo;
+    }
 }
-
-
-
 
