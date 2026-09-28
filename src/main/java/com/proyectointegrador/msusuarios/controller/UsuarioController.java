@@ -1,6 +1,7 @@
 package com.proyectointegrador.msusuarios.controller;
 
 import com.proyectointegrador.msusuarios.dto.CrearClienteDTO;
+import com.proyectointegrador.msusuarios.dto.CrearEmpleadoDTO;
 import com.proyectointegrador.msusuarios.entity.Usuario;
 import com.proyectointegrador.msusuarios.service.UsuarioServicio;
 import jakarta.validation.Valid;
@@ -20,6 +21,15 @@ public class UsuarioController {
             @Valid @RequestBody CrearClienteDTO dto) {
 
         Usuario usuario = usuarioServicio.crearCliente(dto);
+
+        return ResponseEntity.ok(usuario);
+    }
+
+    @PostMapping("/empleado")
+    public ResponseEntity<Usuario> crearEmpleado(
+            @Valid @RequestBody CrearEmpleadoDTO dto) {
+
+        Usuario usuario = usuarioServicio.crearEmpleado(dto);
 
         return ResponseEntity.ok(usuario);
     }
