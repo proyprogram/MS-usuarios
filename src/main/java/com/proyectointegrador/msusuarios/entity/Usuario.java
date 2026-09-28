@@ -36,6 +36,7 @@ public class Usuario {
 
     private String clave;
 
-    @Column(name = "idrol")
-    private Integer idRol;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Rol rol;
 }
