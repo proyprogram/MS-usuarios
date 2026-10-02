@@ -1,6 +1,7 @@
 package com.proyectointegrador.msusuarios.security;
 
 import com.proyectointegrador.msusuarios.entity.Rol;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -24,12 +25,18 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String correo, Rol rol) {
-        return Jwts.builder()
+    public String generateToken(String correo, Rol rol, Long idRestaurante) {
+        JwtBuilder builder = Jwts.builder()
                 .setSubject(correo)
                 .claim("rol", rol.name())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration));
+
+        if (idRestaurante != null) {
+            builder.claim("idRestaurante", idRestaurante);
+        }
+
+        return builder
                 .signWith(getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

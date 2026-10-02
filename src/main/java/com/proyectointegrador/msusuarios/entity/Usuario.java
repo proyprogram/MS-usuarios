@@ -39,4 +39,7 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Rol rol;
+
+    @Column(name = "id_restaurante")
+    private Long idRestaurante;
 }
