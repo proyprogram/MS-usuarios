@@ -27,8 +27,7 @@ public class AuthServicio {
             throw new IllegalArgumentException("Correo o clave incorrectos");
         }
 
-        String token = jwtService.generateToken(usuario.getCorreo(), usuario.getRol(), usuario.getIdRestaurante());
+        String token = jwtService.generateToken(usuario.getCorreo(), usuario.getRol(), usuario.getIdRestaurante(), usuario.getId().longValue());
 
         return LoginResponseDTO.builder().token(token).build();
-    }
-}
+    }}
