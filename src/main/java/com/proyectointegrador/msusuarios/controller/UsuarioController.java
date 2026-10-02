@@ -2,6 +2,7 @@ package com.proyectointegrador.msusuarios.controller;
 
 import com.proyectointegrador.msusuarios.dto.request.CrearClienteDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearEmpleadoDTO;
+import com.proyectointegrador.msusuarios.dto.request.CrearPropietarioDTO;
 import com.proyectointegrador.msusuarios.dto.request.LoginRequestDTO;
 import com.proyectointegrador.msusuarios.dto.response.LoginResponseDTO;
 import com.proyectointegrador.msusuarios.entity.Usuario;
@@ -34,6 +35,15 @@ public class UsuarioController {
             @Valid @RequestBody CrearEmpleadoDTO dto) {
 
         Usuario usuario = usuarioServicio.crearEmpleado(dto);
+
+        return ResponseEntity.ok(usuario);
+    }
+
+    @PostMapping("/propietario")
+    public ResponseEntity<Usuario> crearPropietario(
+            @Valid @RequestBody CrearPropietarioDTO dto) {
+
+        Usuario usuario = usuarioServicio.crearPropietario(dto);
 
         return ResponseEntity.ok(usuario);
     }

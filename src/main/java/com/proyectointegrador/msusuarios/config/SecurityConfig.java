@@ -31,6 +31,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/usuarios/empleado")
                         .hasRole("PROPIETARIO")
+                        .requestMatchers("/usuarios/propietario")
+                        .hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
