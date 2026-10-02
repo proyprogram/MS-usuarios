@@ -1,4 +1,4 @@
-package com.proyectointegrador.msusuarios;
+package com.proyectointegrador.msusuarios.entity;
 
 public enum Rol {
     ADMINISTRADOR,
