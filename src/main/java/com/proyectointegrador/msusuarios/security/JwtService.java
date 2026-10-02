@@ -25,12 +25,14 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String correo, Rol rol, Long idRestaurante) {
+    public String generateToken(String correo, Rol rol, Long idRestaurante, Long idUsuario) {
         JwtBuilder builder = Jwts.builder()
                 .setSubject(correo)
                 .claim("rol", rol.name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration));
+
+        builder.claim("idUsuario", idUsuario);
 
         if (idRestaurante != null) {
             builder.claim("idRestaurante", idRestaurante);
