@@ -1,6 +1,7 @@
 package com.proyectointegrador.msusuarios.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -27,4 +28,7 @@ public class CrearEmpleadoDTO {
 
     @NotBlank
     private String clave;
+
+    @NotNull
+    private Long idRestaurante;
 }

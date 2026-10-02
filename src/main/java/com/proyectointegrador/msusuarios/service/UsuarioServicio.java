@@ -42,6 +42,7 @@ public class UsuarioServicio {
                 .correo(dto.getCorreo())
                 .clave(passwordEncoder.encode(dto.getClave()))
                 .rol(Rol.EMPLEADO)
+                .idRestaurante(dto.getIdRestaurante())
                 .build();
 
         return usuarioRepository.save(usuario);
