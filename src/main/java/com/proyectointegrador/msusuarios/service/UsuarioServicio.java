@@ -1,19 +1,20 @@
 package com.proyectointegrador.msusuarios.service;
 
-import com.proyectointegrador.msusuarios.dto.CrearClienteDTO;
-import com.proyectointegrador.msusuarios.dto.CrearEmpleadoDTO;
+import com.proyectointegrador.msusuarios.dto.request.CrearClienteDTO;
+import com.proyectointegrador.msusuarios.dto.request.CrearEmpleadoDTO;
 import com.proyectointegrador.msusuarios.entity.Rol;
 import com.proyectointegrador.msusuarios.entity.Usuario;
 import com.proyectointegrador.msusuarios.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.mindrot.BCrypt;
 
 @Service
 @RequiredArgsConstructor
 public class UsuarioServicio {
 
     private final UsuarioRepository usuarioRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public Usuario crearCliente(CrearClienteDTO dto) {
 
@@ -23,7 +24,7 @@ public class UsuarioServicio {
                 .documentoDeIdentidad(dto.getDocumentoDeIdentidad())
                 .celular(dto.getCelular())
                 .correo(dto.getCorreo())
-                .clave(BCrypt.hashpw(dto.getClave(), BCrypt.gensalt()))
+                .clave(passwordEncoder.encode(dto.getClave()))
                 .rol(Rol.CLIENTE)
                 .build();
 
@@ -38,7 +39,7 @@ public class UsuarioServicio {
                 .documentoDeIdentidad(dto.getDocumentoDeIdentidad())
                 .celular(dto.getCelular())
                 .correo(dto.getCorreo())
-                .clave(BCrypt.hashpw(dto.getClave(), BCrypt.gensalt()))
+                .clave(passwordEncoder.encode(dto.getClave()))
                 .rol(Rol.EMPLEADO)
                 .build();
 

@@ -1,4 +1,4 @@
-package com.proyectointegrador.msusuarios.dto;
+package com.proyectointegrador.msusuarios.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
