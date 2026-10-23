@@ -27,12 +27,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/usuarios/login",
-                                "/usuarios/cliente"
+                                "/usuarios/cliente",
+                                "/usuarios/propietario",
+                                "/error"
                         ).permitAll()
                         .requestMatchers("/usuarios/empleado")
                         .hasRole("PROPIETARIO")
-                        .requestMatchers("/usuarios/propietario")
-                        .hasRole("ADMINISTRADOR")
+                        // Activar cuando se implemente la HU de autenticación:
+                        // .requestMatchers("/usuarios/propietario")
+                        // .hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

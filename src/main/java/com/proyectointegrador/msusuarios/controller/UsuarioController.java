@@ -5,6 +5,7 @@ import com.proyectointegrador.msusuarios.dto.request.CrearEmpleadoDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearPropietarioDTO;
 import com.proyectointegrador.msusuarios.dto.request.LoginRequestDTO;
 import com.proyectointegrador.msusuarios.dto.response.LoginResponseDTO;
+import com.proyectointegrador.msusuarios.dto.response.ClienteCelularDTO;
 import com.proyectointegrador.msusuarios.entity.Usuario;
 import com.proyectointegrador.msusuarios.service.AuthServicio;
 import com.proyectointegrador.msusuarios.service.UsuarioServicio;
@@ -55,5 +56,14 @@ public class UsuarioController {
         LoginResponseDTO respuesta = authServicio.login(dto);
 
         return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/{id}/celular")
+    public ResponseEntity<ClienteCelularDTO> consultarCelularCliente(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                usuarioServicio.consultarCelularCliente(id)
+        );
     }
 }

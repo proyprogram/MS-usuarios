@@ -3,6 +3,7 @@ package com.proyectointegrador.msusuarios.service;
 import com.proyectointegrador.msusuarios.dto.request.CrearClienteDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearEmpleadoDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearPropietarioDTO;
+import com.proyectointegrador.msusuarios.dto.response.ClienteCelularDTO;
 import com.proyectointegrador.msusuarios.entity.Rol;
 import com.proyectointegrador.msusuarios.entity.Usuario;
 import com.proyectointegrador.msusuarios.repository.UsuarioRepository;
@@ -62,4 +63,18 @@ public class UsuarioServicio {
 
         return usuarioRepository.save(usuario);
     }
+
+    public ClienteCelularDTO consultarCelularCliente(Long idCliente) {
+        Usuario usuario = usuarioRepository.findById(Math.toIntExact(idCliente))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No existe el usuario con ID: " + idCliente));
+
+        if (usuario.getRol() != Rol.CLIENTE) {
+            throw new IllegalArgumentException(
+                    "El usuario indicado no es un cliente.");
+        }
+
+        return new ClienteCelularDTO(usuario.getCelular());
+    }
+
 }
