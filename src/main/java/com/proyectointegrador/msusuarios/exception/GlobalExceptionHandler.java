@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,18 +13,20 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> manejarIllegalArgument(IllegalArgumentException error) {
+    public ResponseEntity<String> manejarIllegalArgument(
+            IllegalArgumentException error) {
         return new ResponseEntity<>(error.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> manejarValidaciones(
             MethodArgumentNotValidException error) {
 
         Map<String, String> respuesta = new HashMap<>();
-        respuesta.put("error", "Error de validaciÃ³n");
+        respuesta.put("error", "Error de validación");
 
         String mensaje = error.getBindingResult().getFieldErrors().isEmpty()
-                ? "Los datos enviados no son vÃ¡lidos."
+                ? "Los datos enviados no son válidos."
                 : error.getBindingResult().getFieldErrors()
                 .get(0).getDefaultMessage();
 
@@ -35,7 +38,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> manejarErrorGeneral(Exception error) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("OcurriÃ³ un error inesperado.");
+                .body("Ocurrió un error inesperado.");
     }
 }
-
