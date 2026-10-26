@@ -1,43 +1,61 @@
+
 package com.proyectointegrador.msusuarios.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private ResponseEntity<Map<String, Object>> crearRespuesta(
+            HttpStatus estado, String mensaje) {
+
+        Map<String, Object> respuesta = new LinkedHashMap<>();
+        respuesta.put("fecha", LocalDateTime.now());
+        respuesta.put("estado", estado.value());
+        respuesta.put("error", estado.getReasonPhrase());
+        respuesta.put("mensaje", mensaje);
+
+        return ResponseEntity.status(estado).body(respuesta);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> manejarIllegalArgument(
+    public ResponseEntity<Map<String, Object>> manejarIllegalArgument(
             IllegalArgumentException error) {
-        return new ResponseEntity<>(error.getMessage(), HttpStatus.BAD_REQUEST);
+
+        return crearRespuesta(
+                HttpStatus.BAD_REQUEST,
+                error.getMessage()
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> manejarValidaciones(
+    public ResponseEntity<Map<String, Object>> manejarValidaciones(
             MethodArgumentNotValidException error) {
-
-        Map<String, String> respuesta = new HashMap<>();
-        respuesta.put("error", "Error de validación");
 
         String mensaje = error.getBindingResult().getFieldErrors().isEmpty()
                 ? "Los datos enviados no son válidos."
                 : error.getBindingResult().getFieldErrors()
                 .get(0).getDefaultMessage();
 
-        respuesta.put("mensaje", mensaje);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+        return crearRespuesta(HttpStatus.BAD_REQUEST, mensaje);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> manejarErrorGeneral(Exception error) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Ocurrió un error inesperado.");
+    public ResponseEntity<Map<String, Object>> manejarErrorGeneral(
+            Exception error) {
+
+        return crearRespuesta(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Ocurrió un error inesperado."
+        );
     }
 }
+

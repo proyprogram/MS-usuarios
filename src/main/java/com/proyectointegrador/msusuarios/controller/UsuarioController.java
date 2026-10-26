@@ -60,10 +60,11 @@ public class UsuarioController {
 
     @GetMapping("/{id}/celular")
     public ResponseEntity<ClienteCelularDTO> consultarCelularCliente(
-            @PathVariable Long id) {
+            @PathVariable Integer id) {
 
         return ResponseEntity.ok(
                 usuarioServicio.consultarCelularCliente(id)
         );
     }
 }
+

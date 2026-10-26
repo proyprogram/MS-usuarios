@@ -64,8 +64,9 @@ public class UsuarioServicio {
         return usuarioRepository.save(usuario);
     }
 
-    public ClienteCelularDTO consultarCelularCliente(Long idCliente) {
-        Usuario usuario = usuarioRepository.findById(Math.toIntExact(idCliente))
+    public ClienteCelularDTO consultarCelularCliente(Integer idCliente) {
+
+        Usuario usuario = usuarioRepository.findById(idCliente)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No existe el usuario con ID: " + idCliente));
 
@@ -76,5 +77,4 @@ public class UsuarioServicio {
 
         return new ClienteCelularDTO(usuario.getCelular());
     }
-
 }
