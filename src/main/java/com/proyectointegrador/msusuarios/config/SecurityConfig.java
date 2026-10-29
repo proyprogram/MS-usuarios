@@ -33,6 +33,8 @@ public class SecurityConfig {
                         .hasRole("PROPIETARIO")
                         .requestMatchers("/usuarios/propietario")
                         .hasRole("ADMINISTRADOR")
+                        .requestMatchers("/usuarios/administrador")
+                        .hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

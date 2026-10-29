@@ -1,5 +1,6 @@
 package com.proyectointegrador.msusuarios.controller;
 
+import com.proyectointegrador.msusuarios.dto.request.CrearAdministradorDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearClienteDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearEmpleadoDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearPropietarioDTO;
@@ -44,6 +45,15 @@ public class UsuarioController {
             @Valid @RequestBody CrearPropietarioDTO dto) {
 
         Usuario usuario = usuarioServicio.crearPropietario(dto);
+
+        return ResponseEntity.ok(usuario);
+    }
+
+    @PostMapping("/administrador")
+    public ResponseEntity<Usuario> crearAdministrador(
+            @Valid @RequestBody CrearAdministradorDTO dto) {
+
+        Usuario usuario = usuarioServicio.crearAdministrador(dto);
 
         return ResponseEntity.ok(usuario);
     }

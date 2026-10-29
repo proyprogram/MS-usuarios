@@ -1,5 +1,6 @@
 package com.proyectointegrador.msusuarios.service;
 
+import com.proyectointegrador.msusuarios.dto.request.CrearAdministradorDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearClienteDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearEmpleadoDTO;
 import com.proyectointegrador.msusuarios.dto.request.CrearPropietarioDTO;
@@ -58,6 +59,27 @@ public class UsuarioServicio {
                 .correo(dto.getCorreo())
                 .clave(passwordEncoder.encode(dto.getClave()))
                 .rol(Rol.PROPIETARIO)
+                .build();
+
+        return usuarioRepository.save(usuario);
+    }
+
+    public Usuario crearAdministrador(CrearAdministradorDTO dto) {
+
+        if (usuarioRepository.findByCorreo(dto.getCorreo()).isPresent()) {
+            throw new IllegalArgumentException(
+                    "Ya existe un usuario registrado con el correo " + dto.getCorreo() + "."
+            );
+        }
+
+        Usuario usuario = Usuario.builder()
+                .nombre(dto.getNombre())
+                .apellido(dto.getApellido())
+                .documentoDeIdentidad(dto.getDocumentoDeIdentidad())
+                .celular(dto.getCelular())
+                .correo(dto.getCorreo())
+                .clave(passwordEncoder.encode(dto.getClave()))
+                .rol(Rol.ADMINISTRADOR)
                 .build();
 
         return usuarioRepository.save(usuario);
