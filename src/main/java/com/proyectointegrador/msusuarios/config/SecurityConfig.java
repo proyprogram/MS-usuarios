@@ -4,6 +4,7 @@ import com.proyectointegrador.msusuarios.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,12 +28,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/usuarios/login",
-                                "/usuarios/cliente"
+                                "/usuarios/cliente",
+                                "/error"
                         ).permitAll()
                         .requestMatchers("/usuarios/empleado")
                         .hasRole("PROPIETARIO")
                         .requestMatchers("/usuarios/propietario")
                         .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/usuarios/*/celular")
+                        .hasRole("EMPLEADO")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
@@ -43,3 +47,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
