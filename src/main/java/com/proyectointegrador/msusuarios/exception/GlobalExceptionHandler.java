@@ -1,4 +1,3 @@
-
 package com.proyectointegrador.msusuarios.exception;
 
 import org.springframework.http.HttpStatus;
@@ -58,4 +57,3 @@ public class GlobalExceptionHandler {
         );
     }
 }
-

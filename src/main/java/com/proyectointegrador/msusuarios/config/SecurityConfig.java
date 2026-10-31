@@ -35,6 +35,8 @@ public class SecurityConfig {
                         .hasRole("PROPIETARIO")
                         .requestMatchers("/usuarios/propietario")
                         .hasRole("ADMINISTRADOR")
+                        .requestMatchers("/usuarios/administrador")
+                        .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/usuarios/*/celular")
                         .hasRole("EMPLEADO")
                         .anyRequest().authenticated()
@@ -47,4 +49,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
