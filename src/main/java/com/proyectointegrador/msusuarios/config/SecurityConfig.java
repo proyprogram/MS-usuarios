@@ -29,7 +29,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/usuarios/login",
                                 "/usuarios/cliente",
-                                "/error"
+                                "/error",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers("/usuarios/empleado")
                         .hasRole("PROPIETARIO")
