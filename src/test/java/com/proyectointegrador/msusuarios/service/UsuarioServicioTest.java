@@ -8,18 +8,27 @@ import com.proyectointegrador.msusuarios.dto.response.ClienteCelularDTO;
 import com.proyectointegrador.msusuarios.entity.Rol;
 import com.proyectointegrador.msusuarios.entity.Usuario;
 import com.proyectointegrador.msusuarios.repository.UsuarioRepository;
+import com.proyectointegrador.msusuarios.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,6 +41,12 @@ class UsuarioServicioTest {
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtService jwtService;
+
+    @Mock
+    private RestTemplate restTemplate;
 
     @InjectMocks
     private UsuarioServicio usuarioServicio;
@@ -60,7 +75,7 @@ class UsuarioServicioTest {
     }
 
     @Test
-    void crearEmpleado_deberiaGuardarUsuarioConRolEmpleadoYRestauranteAsociado() {
+    void crearEmpleado_deberiaGuardarUsuarioConRolEmpleadoYRestauranteAsociado_siEsElPropietario() {
         CrearEmpleadoDTO dto = CrearEmpleadoDTO.builder()
                 .nombre("Pedro")
                 .apellido("Gomez")
@@ -71,16 +86,47 @@ class UsuarioServicioTest {
                 .idRestaurante(1L)
                 .build();
 
+        String authorization = "Bearer token-valido";
+
+        when(jwtService.extractIdUsuario("token-valido")).thenReturn(10L);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(Map.class)))
+                .thenReturn(ResponseEntity.ok(Map.of("idPropietario", 10)));
         when(passwordEncoder.encode("clave456")).thenReturn("claveEncriptada2");
         when(usuarioRepository.save(any(Usuario.class)))
                 .thenAnswer(invocacion -> invocacion.getArgument(0));
 
-        Usuario resultado = usuarioServicio.crearEmpleado(dto);
+        Usuario resultado = usuarioServicio.crearEmpleado(dto, authorization);
 
         assertEquals(Rol.EMPLEADO, resultado.getRol());
         assertEquals(1L, resultado.getIdRestaurante());
         assertEquals("claveEncriptada2", resultado.getClave());
         verify(usuarioRepository).save(any(Usuario.class));
+    }
+
+    @Test
+    void crearEmpleado_deberiaLanzarSecurityException_siElTokenNoEsDelPropietarioDelRestaurante() {
+        CrearEmpleadoDTO dto = CrearEmpleadoDTO.builder()
+                .nombre("Pedro")
+                .apellido("Gomez")
+                .documentoDeIdentidad("654321")
+                .celular("3009876543")
+                .correo("pedro@test.com")
+                .clave("clave456")
+                .idRestaurante(1L)
+                .build();
+
+        String authorization = "Bearer token-de-otro-usuario";
+
+        when(jwtService.extractIdUsuario("token-de-otro-usuario")).thenReturn(99L);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(Map.class)))
+                .thenReturn(ResponseEntity.ok(Map.of("idPropietario", 10)));
+
+        assertThrows(
+                SecurityException.class,
+                () -> usuarioServicio.crearEmpleado(dto, authorization)
+        );
+
+        verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
     @Test
@@ -92,8 +138,11 @@ class UsuarioServicioTest {
                 .celular("3012345678")
                 .correo("laura@test.com")
                 .clave("clave789")
+                .fechaDeNacimiento(LocalDate.now().minusYears(25))
                 .build();
 
+        when(usuarioRepository.existsByCorreo("laura@test.com")).thenReturn(false);
+        when(usuarioRepository.existsByDocumentoDeIdentidad("789012")).thenReturn(false);
         when(passwordEncoder.encode("clave789")).thenReturn("claveEncriptada3");
         when(usuarioRepository.save(any(Usuario.class)))
                 .thenAnswer(invocacion -> invocacion.getArgument(0));
@@ -103,6 +152,86 @@ class UsuarioServicioTest {
         assertEquals(Rol.PROPIETARIO, resultado.getRol());
         assertEquals("laura@test.com", resultado.getCorreo());
         verify(usuarioRepository).save(any(Usuario.class));
+    }
+
+    @Test
+    void crearPropietario_deberiaLanzarExcepcion_siElCorreoYaExiste() {
+        CrearPropietarioDTO dto = CrearPropietarioDTO.builder()
+                .nombre("Laura")
+                .apellido("Martinez")
+                .documentoDeIdentidad("789012")
+                .celular("3012345678")
+                .correo("laura@test.com")
+                .clave("clave789")
+                .fechaDeNacimiento(LocalDate.now().minusYears(25))
+                .build();
+
+        when(usuarioRepository.existsByCorreo("laura@test.com")).thenReturn(true);
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> usuarioServicio.crearPropietario(dto)
+        );
+
+        assertEquals(
+                "Ya existe un usuario registrado con el correo laura@test.com.",
+                excepcion.getMessage()
+        );
+        verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
+
+    @Test
+    void crearPropietario_deberiaLanzarExcepcion_siElDocumentoYaExiste() {
+        CrearPropietarioDTO dto = CrearPropietarioDTO.builder()
+                .nombre("Laura")
+                .apellido("Martinez")
+                .documentoDeIdentidad("789012")
+                .celular("3012345678")
+                .correo("laura@test.com")
+                .clave("clave789")
+                .fechaDeNacimiento(LocalDate.now().minusYears(25))
+                .build();
+
+        when(usuarioRepository.existsByCorreo("laura@test.com")).thenReturn(false);
+        when(usuarioRepository.existsByDocumentoDeIdentidad("789012")).thenReturn(true);
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> usuarioServicio.crearPropietario(dto)
+        );
+
+        assertEquals(
+                "Ya existe un usuario registrado con el documento 789012.",
+                excepcion.getMessage()
+        );
+        verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
+
+    @Test
+    void crearPropietario_deberiaLanzarExcepcion_siEsMenorDeEdad() {
+        CrearPropietarioDTO dto = CrearPropietarioDTO.builder()
+                .nombre("Laura")
+                .apellido("Martinez")
+                .documentoDeIdentidad("789012")
+                .celular("3012345678")
+                .correo("laura@test.com")
+                .clave("clave789")
+                .fechaDeNacimiento(LocalDate.now().minusYears(17))
+                .build();
+
+        when(usuarioRepository.existsByCorreo("laura@test.com")).thenReturn(false);
+        when(usuarioRepository.existsByDocumentoDeIdentidad("789012")).thenReturn(false);
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> usuarioServicio.crearPropietario(dto)
+        );
+
+        assertEquals(
+                "El propietario debe ser mayor de edad (18 años o más).",
+                excepcion.getMessage()
+        );
+        verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
     @Test
@@ -197,5 +326,31 @@ class UsuarioServicioTest {
 
         assertEquals("El usuario indicado no es un cliente.", excepcion.getMessage());
     }
-}
 
+    @Test
+    void consultarRol_deberiaRetornarIdYRol_siElUsuarioExiste() {
+        Usuario propietario = Usuario.builder()
+                .id(10)
+                .rol(Rol.PROPIETARIO)
+                .build();
+
+        when(usuarioRepository.findById(10)).thenReturn(Optional.of(propietario));
+
+        Map<String, Object> resultado = usuarioServicio.consultarRol(10);
+
+        assertEquals(10, resultado.get("id"));
+        assertEquals("PROPIETARIO", resultado.get("rol"));
+    }
+
+    @Test
+    void consultarRol_deberiaLanzarExcepcion_siElUsuarioNoExiste() {
+        when(usuarioRepository.findById(888)).thenReturn(Optional.empty());
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> usuarioServicio.consultarRol(888)
+        );
+
+        assertEquals("No existe el usuario con ID: 888", excepcion.getMessage());
+    }
+}

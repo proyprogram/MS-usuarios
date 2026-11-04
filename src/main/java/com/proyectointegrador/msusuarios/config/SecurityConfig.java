@@ -39,6 +39,8 @@ public class SecurityConfig {
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/usuarios/*/celular")
                         .hasRole("EMPLEADO")
+                        .requestMatchers(HttpMethod.GET, "/usuarios/*/rol")
+                        .hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
