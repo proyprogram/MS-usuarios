@@ -12,8 +12,11 @@ import com.proyectointegrador.msusuarios.service.AuthServicio;
 import com.proyectointegrador.msusuarios.service.UsuarioServicio;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -34,9 +37,10 @@ public class UsuarioController {
 
     @PostMapping("/empleado")
     public ResponseEntity<Usuario> crearEmpleado(
-            @Valid @RequestBody CrearEmpleadoDTO dto) {
+            @Valid @RequestBody CrearEmpleadoDTO dto,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
 
-        Usuario usuario = usuarioServicio.crearEmpleado(dto);
+        Usuario usuario = usuarioServicio.crearEmpleado(dto, authorization);
 
         return ResponseEntity.ok(usuario);
     }
@@ -76,5 +80,13 @@ public class UsuarioController {
                 usuarioServicio.consultarCelularCliente(id)
         );
     }
-}
 
+    @GetMapping("/{id}/rol")
+    public ResponseEntity<Map<String, Object>> consultarRol(
+            @PathVariable Integer id) {
+
+        return ResponseEntity.ok(
+                usuarioServicio.consultarRol(id)
+        );
+    }
+}

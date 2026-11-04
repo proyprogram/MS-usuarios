@@ -62,6 +62,34 @@ public class JwtService {
                 .toString();
     }
 
+    public Long extractIdUsuario(String token) {
+        Object valor = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("idUsuario");
+
+        if (valor == null) {
+            return null;
+        }
+        return ((Number) valor).longValue();
+    }
+
+    public Long extractIdRestaurante(String token) {
+        Object valor = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("idRestaurante");
+
+        if (valor == null) {
+            return null;
+        }
+        return ((Number) valor).longValue();
+    }
+
     public boolean isTokenValido(String token) {
         try {
             Jwts.parser()
